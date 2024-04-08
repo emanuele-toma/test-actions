@@ -67,16 +67,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: dist
-          path: dist
-
       - name: Build and push Docker image
         uses: mr-smithers-excellent/docker-build-push@v6
         with:
-          image: docker-hub-repo/image-name
+          image: emanuelejac/test-actions
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
