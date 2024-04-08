@@ -58,6 +58,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-
-      - name: Add write permission to build.yml
-        run: chmod +w /home/emanuele/Desktop/test-actions/.github/workflows/build.yml
+          
