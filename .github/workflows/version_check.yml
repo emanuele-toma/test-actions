@@ -1,0 +1,43 @@
+name: Check Version
+
+on:
+  pull_request:
+    branches:
+      - local
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.base_ref }}
+
+      - name: Get base branch version
+        run: echo "BASE_VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Get PR branch version
+        run: echo "PR_VERSION=$(cat VERSION)" >> $GITHUB_ENV
+
+      - name: Compare versions
+        run: |
+          IFS='.' read -ra BASE_VERSION <<< "${{ env.BASE_VERSION }}"
+          IFS='.' read -ra PR_VERSION <<< "${{ env.PR_VERSION }}"
+          for i in "${!BASE_VERSION[@]}"; do
+            if [[ -z "${PR_VERSION[i]}" ]] || [[ "${PR_VERSION[i]}" -lt "${BASE_VERSION[i]}" ]]; then
+              echo "Version check failed"
+              exit 1
+            elif [[ "${PR_VERSION[i]}" -gt "${BASE_VERSION[i]}" ]]; then
+              echo "Version check passed"
+              exit 0
+            fi
+          done
+          echo "Version check failed"
+          exit 1
